@@ -16,6 +16,10 @@ public class UserService {
 	public List<UserBean> listUsers() {
 		return this.userDao.listUsers();
 	}
+	
+	public UserBean findByUsername(String username) {
+		return this.userDao.findByUsername(username);
+	}
 
 	public void createUser(UserBean user) {
 		this.userDao.createUser(user);
