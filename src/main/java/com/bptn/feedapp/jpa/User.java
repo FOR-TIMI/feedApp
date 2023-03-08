@@ -3,12 +3,16 @@ package com.bptn.feedapp.jpa;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name="\"User\"")
@@ -23,25 +27,23 @@ public class User implements Serializable {
 	
 	@Column(name="\"firstName\"")
 	private String firstName;
-	
+		
 	@Column(name="\"lastName\"")
 	private String lastName;
-	
-	@Column(name="\"username\"")
+
 	private String username;
-	
-	@Column(name="\"password\"")
+
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
-	
-	@Column(name="\"phone\"")
+		
 	private String phone;
-	
+
 	@Column(name="\"emailId\"")
 	private String emailId;
-	
+		
 	@Column(name="\"emailVerified\"")
 	private Boolean emailVerified;
-	
+		
 	@Column(name="\"createdOn\"")
 	private Timestamp createdOn;
 	
@@ -121,12 +123,6 @@ public class User implements Serializable {
 		this.createdOn = createdOn;
 	}
 
-	@Override
-	public String toString() {
-		return "User [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", username="
-				+ username + ", password=" + password + ", phone=" + phone + ", emailId=" + emailId + ", emailVerified="
-				+ emailVerified + ", createdOn=" + createdOn + "]";
-	}
 	
 	
 }
