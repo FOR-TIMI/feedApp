@@ -36,17 +36,17 @@ public class UserDao {
 		 */
 		return users.isEmpty() ? null : users.get(0);
 	}
-	
+
 	public void createUser(UserBean user) {
 
-	    String sql = "INSERT INTO \"User\" (\"firstName\", \"lastName\", username, phone, \"emailId\", password, \"emailVerified\", \"createdOn\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO \"User\" (\"firstName\", \"lastName\", username, phone, \"emailId\", password, \"emailVerified\", \"createdOn\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-	    logger.debug("Insert Query: {}", sql);
+		logger.debug("Insert Query: {}", sql);
 
-	    /* Executes the Insert Statement */
-	    this.jdbcTemplate.update(sql, new Object[] { user.getFirstName(), user.getLastName(), user.getUsername(),
-	            user.getPhone(), user.getEmailId(), user.getPassword(), user.getEmailVerified(), user.getCreatedOn() });
-	
+		/* Executes the Insert Statement */
+		this.jdbcTemplate.update(sql, new Object[] { user.getFirstName(), user.getLastName(), user.getUsername(),
+				user.getPhone(), user.getEmailId(), user.getPassword(), user.getEmailVerified(), user.getCreatedOn() });
+
 	}
 
 }
