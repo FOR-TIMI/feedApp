@@ -1,5 +1,7 @@
 package com.bptn.feedapp.service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +16,16 @@ public class UserService {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	public User signup(User user) {
+		user.setUsername(user.getUsername().toLowerCase());
+		user.setEmailId(user.getEmailId().toLowerCase());
+		user.setEmailVerified(false);
+		user.setCreatedOn(Timestamp.from(Instant.now()));
+		this.userRepository.save(user);
+		
+		return user;
+	}
 
 	public List<User> listUsers() {
 		return this.userRepository.findAll();
