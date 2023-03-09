@@ -23,6 +23,10 @@ public class FeedMetaData implements Serializable {
 	private Integer FeetMetaDataId;
 	
 	@ManyToOne
+	@JoinColumn(name="\"feedId\"")
+	private Feed feed;
+	
+	@ManyToOne
 	@JoinColumn(name="\"actionUserId\"")
 	private User user;
 	
@@ -52,6 +56,14 @@ public class FeedMetaData implements Serializable {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public Feed getFeed() {
+		return feed;
+	}
+
+	public void setFeed(Feed feed) {
+		this.feed = feed;
 	}
 
 	public Boolean getIsLike() {

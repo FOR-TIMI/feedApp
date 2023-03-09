@@ -62,7 +62,9 @@ public class User implements Serializable {
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	private List<Feed> feeds;
-
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "user")
 	private List<FeedMetaData> feedMetaData;
 
 	public User() {
