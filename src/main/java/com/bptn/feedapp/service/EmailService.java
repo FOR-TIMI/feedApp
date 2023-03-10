@@ -73,7 +73,7 @@ public class EmailService {
 	@Async
 	public void sendVerificationEmail(User user) {
 
-		this.sendEmail(user, this.provider.getClientVerifyParam(), "verify_email",
+		this.sendEmail(user, this.provider.getClientVerifyParam(), "verifyEmail",
 				String.format("Welcome %s %s", user.getFirstName(), user.getLastName()),
 				this.provider.getClientVerifyExpiration());
 	}
