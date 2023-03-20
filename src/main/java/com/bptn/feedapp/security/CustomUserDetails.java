@@ -1,4 +1,4 @@
-package org.springframework.security.core.userdetails;
+package com.bptn.feedapp.security;
 
 import com.bptn.feedapp.jpa.User;
 
