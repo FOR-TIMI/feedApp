@@ -74,5 +74,10 @@ public class UserController {
 		logger.debug("Signing up, username: {}", user.getUsername());
 		return this.userService.signup(user);
 	}
-
+	
+	@GetMapping("/verify/email")
+	public void verifyEmail() {
+		logger.debug("Verifying Email");
+		this.userService.verifyEmail();
+	}
 }
