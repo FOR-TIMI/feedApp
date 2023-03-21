@@ -13,6 +13,8 @@ import com.bptn.feedapp.repository.UserRepository;
 import com.bptn.feedapp.exception.domain.EmailExistException;
 import com.bptn.feedapp.exception.domain.UsernameExistException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.bptn.feedapp.exception.domain.UserNotFoundException;
 
 @Service
 public class UserService {
@@ -22,10 +24,11 @@ public class UserService {
 
 	@Autowired
 	EmailService emailService;
-	
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
-
+	
+	/*To register a user*/
 	public User signup(User user) {
 
 		user.setUsername(user.getUsername().toLowerCase());
@@ -42,12 +45,13 @@ public class UserService {
 		this.userRepository.save(user);
 		return user;
 
-   }
+	}
 
 	public List<User> listUsers() {
 		return this.userRepository.findAll();
 	}
-
+	
+	/* To find a user by their user name if it exists in the database*/
 	public Optional<User> findByUsername(String username) {
 		return this.userRepository.findByUsername(username);
 	}
@@ -56,6 +60,7 @@ public class UserService {
 		this.userRepository.save(user);
 	}
 
+	/* To make sure a user name and email is unique*/
 	private void validateUsernameAndEmail(String username, String emailId) {
 
 		this.userRepository.findByUsername(username).ifPresent(u -> {
@@ -66,5 +71,18 @@ public class UserService {
 			throw new EmailExistException(String.format("Email already exists, %s", u.getEmailId()));
 		});
 
+	}
+	
+	/* To verify a user's email */
+	public void verifyEmail() {
+
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
+
+		user.setEmailVerified(true);
+
+		this.userRepository.save(user);
 	}
 }
