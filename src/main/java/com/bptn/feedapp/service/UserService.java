@@ -29,7 +29,7 @@ import com.bptn.feedapp.security.JwtService;
 
 @Service
 public class UserService {
-	
+
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
@@ -46,10 +46,10 @@ public class UserService {
 
 	@Autowired
 	JwtService jwtService;
-	
+
 	@Autowired
 	ResourceProvider provider;
-	
+
 	/* To register a user */
 	public User signup(User user) {
 
@@ -122,7 +122,11 @@ public class UserService {
 		return this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 	}
 
-	/*To over load the above authenticate method and return the users that have verified their email or throw an error if the user has not verified their email*/
+	/*
+	 * To over load the above authenticate method and return the users that have
+	 * verified their email or throw an error if the user has not verified their
+	 * email
+	 */
 	public User authenticate(User user) {
 
 		/* Spring security authentication */
@@ -132,23 +136,41 @@ public class UserService {
 		return this.userRepository.findByUsername(user.getUsername()).map(UserService::isEmailVerified).get();
 	}
 
-	/*generates a JWT token for a given user and returns the header with a generated token*/
+	/*
+	 * generates a JWT token for a given user and returns the header with a
+	 * generated token
+	 */
 	public HttpHeaders generateJwtHeader(String username) {
 		HttpHeaders headers = new HttpHeaders();
-		
+
 		headers.add(AUTHORIZATION, this.jwtService.generateJwtToken(username, this.provider.getJwtExpiration()));
-		
+
 		return headers;
 	}
 
 	/* Send reset password email */
 	public void sendResetPasswordEmail(String emailId) {
 		Optional<User> opt = this.userRepository.findByEmailId(emailId);
-		
-		if(opt.isPresent()) {
+
+		if (opt.isPresent()) {
 			this.emailService.sendResetPasswordEmail(opt.get());
 		} else {
 			logger.debug("That email does not exist, {}", emailId);
 		}
 	}
+
+	/* To reset a password */
+	public void resetPassword(String password) {
+
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
+
+		user.setPassword(this.passwordEncoder.encode(password));
+
+		this.userRepository.save(user);
+
+	}
+
 }
