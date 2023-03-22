@@ -25,6 +25,7 @@ import com.bptn.feedapp.exception.domain.EmailExistException;
 import com.bptn.feedapp.exception.domain.EmailNotVerifiedException;
 import com.bptn.feedapp.exception.domain.UserNotFoundException;
 import com.bptn.feedapp.exception.domain.UsernameExistException;
+import com.bptn.feedapp.jpa.Profile;
 import com.bptn.feedapp.jpa.User;
 import com.bptn.feedapp.provider.ResourceProvider;
 import com.bptn.feedapp.repository.UserRepository;
@@ -186,25 +187,22 @@ public class UserService {
 
 	/* Helper Method to update a field in the User table */
 	private void updateValue(Supplier<String> getter, Consumer<String> setter) {
-		
+
 		Optional.ofNullable(getter.get())
-		        //.filter(StringUtils::hasText)
-			       .map(String::trim)
-			       .ifPresent(setter);
+				// .filter(StringUtils::hasText)
+				.map(String::trim).ifPresent(setter);
 	}
-	
+
 	/* Helper Method to update password */
 	private void updatePassword(Supplier<String> getter, Consumer<String> setter) {
 
-	    Optional.ofNullable(getter.get())
-	               .filter(StringUtils::hasText)
-	               .map(this.passwordEncoder::encode)
-				   .ifPresent(setter);
+		Optional.ofNullable(getter.get()).filter(StringUtils::hasText).map(this.passwordEncoder::encode)
+				.ifPresent(setter);
 	}
-	
+
 	/* Helper Method to update a user */
 	private User updateUser(User user, User currentUser) {
-	    
+
 		this.updateValue(user::getFirstName, currentUser::setFirstName);
 		this.updateValue(user::getLastName, currentUser::setLastName);
 		this.updateValue(user::getPhone, currentUser::setPhone);
@@ -212,22 +210,49 @@ public class UserService {
 		this.updatePassword(user::getPassword, currentUser::setPassword);
 
 		return this.userRepository.save(currentUser);
-}
-	
-	/* Method to update user*/
+	}
+
+	/* Method to update user */
 	public User updateUser(User user) {
-		
+
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		/* Validates the new email if provided */
-		this.userRepository.findByEmailId(user.getEmailId())
-	                            .filter(u->!u.getUsername().equals(username))
-	                            .ifPresent(u -> {throw new EmailExistException(String.format("Email already exists, %s", u.getEmailId()));});
-		    
-		/* Get and Update User */	
-		return this.userRepository.findByUsername(username)
-					            .map(currentUser -> this.updateUser(user, currentUser))
-					            .orElseThrow(()-> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
+		this.userRepository.findByEmailId(user.getEmailId()).filter(u -> !u.getUsername().equals(username))
+				.ifPresent(u -> {
+					throw new EmailExistException(String.format("Email already exists, %s", u.getEmailId()));
+				});
+
+		/* Get and Update User */
+		return this.userRepository.findByUsername(username).map(currentUser -> this.updateUser(user, currentUser))
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
 	}
-	
+
+	/* Helper method to update a user's profile */
+	private User updateUserProfile(Profile profile, User user) {
+		Profile currentProfile = user.getProfile();
+
+		/* Update the profile if it exists */
+		if (Optional.ofNullable(currentProfile).isPresent()) {
+			this.updateValue(profile::getHeadline, currentProfile::setHeadline);
+			this.updateValue(profile::getBio, currentProfile::setBio);
+			this.updateValue(profile::getCity, currentProfile::setCity);
+			this.updateValue(profile::getCountry, currentProfile::setCountry);
+			this.updateValue(profile::getPicture, currentProfile::setPicture);
+		} else { /* create a new profile and setProfile to the user */
+			user.setProfile(profile);
+			profile.setUser(user);
+		}
+
+		return this.userRepository.save(user);
+	}
+
+	public User updateUserProfile(Profile profile) {
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		/* Get and Update the user if the user exists */
+		return this.userRepository.findByUsername(username).map(u -> this.updateUserProfile(profile, u))
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username does not exist, %s", username)));
+	}
+
 }
