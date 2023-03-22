@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bptn.feedapp.jpa.User;
 import com.bptn.feedapp.service.UserService;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @CrossOrigin(exposedHeaders = "Authorization")
 @RestController
@@ -108,4 +109,10 @@ public class UserController {
 		 this.userService.sendResetPasswordEmail(emailId);
 	}
 	
+	@PostMapping("/reset")
+	public void passwordReset(@RequestBody JsonNode json) {
+		logger.debug("Resetting password, password: {}", json.get("password").asText());
+		
+		this.userService.resetPassword(json.get("password").asText());
+	}
 }
