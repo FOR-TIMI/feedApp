@@ -173,4 +173,13 @@ public class UserService {
 
 	}
 
+	/* Get the signed in user */
+	public User getUser() {
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		return this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username does not exist, %s", username)));
+	}
+
+
 }
