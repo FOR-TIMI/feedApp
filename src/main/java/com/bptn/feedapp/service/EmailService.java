@@ -36,6 +36,7 @@ public class EmailService {
 	@Autowired
 	JavaMailSender javaMailSender;
 
+	/* Helper method to send an email */
 	private void sendEmail(User user, String clientParam, String templateName, String emailSubject, long expiration) {
 
 		try {
