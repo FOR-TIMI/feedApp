@@ -57,9 +57,24 @@ public class FeedService {
 		/* Check if the user exists */
 		User user = this.userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
-		
-		Page<Feed> paged = this.feedRepository.findByUser(user, PageRequest.of(pageNum, pageSize, Sort.by("feedId").descending()));
+
+		Page<Feed> paged = this.feedRepository.findByUser(user,
+				PageRequest.of(pageNum, pageSize, Sort.by("feedId").descending()));
+
+		return new PageResponse<Feed>(paged);
+	}
+
+	/* Get all feeds not related to the signed in user */
+	public PageResponse<Feed> getOtherUsersFeeds(int pageNum, int pageSize) {
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
+
+		Page<Feed> paged = this.feedRepository.findByUserNot(user,
+				PageRequest.of(pageNum, pageSize, Sort.by("feedId").descending()));
 		
 		return new PageResponse<Feed>(paged);
 	}
+
 }
