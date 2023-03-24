@@ -30,6 +30,8 @@ import com.bptn.feedapp.repository.UserRepository;
 import com.bptn.feedapp.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -139,6 +141,49 @@ public class UserControllerTest {
 	    	    .andExpect(jsonPath("$.httpStatus", is("BAD_REQUEST")))
 	    	    .andExpect(jsonPath("$.reason", is("BAD REQUEST")))
 	    	    .andExpect(jsonPath("$.message", is(String.format("Email already exists, %s", this.user.getEmailId()))));
+	}
+	
+	@Test
+	@Order(4)
+	public void verifyEmailIntegrationTest() throws Exception {
+
+		/* Check if the User exists */
+		Optional<User> opt = this.userRepository.findByUsername(this.user.getUsername());
+		assertTrue(opt.isPresent(), "User Should Exist");
+
+		/* Check the user emailVerified flag initial value */
+		assertEquals(false, opt.get().getEmailVerified());
+
+		String jwt = String.format("Bearer %s", this.jwtService.generateJwtToken(this.user.getUsername(), 10_000));
+
+		/* Check the Rest End Point Response */
+	this.mockMvc.perform(MockMvcRequestBuilders.get("/user/verify/email").header(AUTHORIZATION, jwt)).andExpect(status().isOk());
+
+		/* Check if the User exists */
+		opt = this.userRepository.findByUsername(this.user.getUsername());
+		assertTrue(opt.isPresent(), "User Should Exist");
+
+		/* Check the user emailVerified flag was updated */
+		assertEquals(true, opt.get().getEmailVerified());
+
+	}
+	
+	@Test
+	@Order(5)
+	public void verifyEmailUsernameNotFoundIntegrationTest() throws Exception {
+
+		/* Check if the User exists */
+		Optional<User> opt = this.userRepository.findByUsername(this.otherUsername);
+		assertTrue(opt.isEmpty(), "User Should Not Exist");
+
+		String jwt = String.format("Bearer %s", this.jwtService.generateJwtToken(this.otherUsername, 10_000));
+
+		/* Check the Rest End Point Response */		this.mockMvc.perform(MockMvcRequestBuilders.get("/user/verify/email").header(AUTHORIZATION, jwt))
+	.andExpect(status().is4xxClientError()).andExpect(jsonPath("$.httpStatusCode", is(400)))
+					.andExpect(jsonPath("$.httpStatus", is("BAD_REQUEST")))
+					.andExpect(jsonPath("$.reason", is("BAD REQUEST")))
+					.andExpect(jsonPath("$.message", is(String.format("Username doesn't exist, %s", this.otherUsername))));
+
 	}
 
 }
