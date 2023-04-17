@@ -38,7 +38,7 @@ public class FeedMetaData implements Serializable {
 	
 	private String comment;
 	
-	@Column(name="\"dateCreated\"")
+	@Column(name="\"createdOn\"")
 	private Timestamp createdOn;
 	
 	public FeedMetaData() {
