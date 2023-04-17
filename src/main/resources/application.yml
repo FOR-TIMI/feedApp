@@ -1,0 +1,114 @@
+# Tomcat Server
+server:
+  port: 8080
+
+# Logger
+logging.level:
+  web: DEBUG
+  "[com.bptn.]": DEBUG
+
+# Active Profile
+spring:
+  profiles:
+    active: default
+
+  # Banner Text
+  banner:
+    charset: UTF-8
+    location: classpath:/banner/academy.txt
+
+  # Jackson Settings
+  jackson:
+    time-zone: America/Toronto
+    date-format: "yyyy-MM-dd HH:mm:ss"
+
+  # Common Database Settings
+  sql:
+    init:
+      continue-on-error: false
+  jpa:
+    show-sql: true
+    open-in-view: false
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ENABLE_SELECTIVE
+      hibernate:
+        "[format_sql]": true
+    hibernate:
+      naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  # Email Settings
+  mail:
+    username: something
+    password: something
+    host: smtp.gmail.com
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+---
+# Default Profile
+spring:
+  config:
+    activate:
+      on-profile: default
+
+  # Database Settings
+  datasource:
+    url: jdbc:postgresql://localhost:5432/feedAppModal
+    username: postgres
+    password: pg123
+    hikari:
+      maximum-pool-size: 2
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+---
+# Prod Profile
+server:
+  port: 8080
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  # Database Settings
+  datasource:
+    url: jdbc:postgresql://localhost:5432/feedAppModal
+    username: postgres
+    password: pg123
+    hikari:
+      maximum-pool-size: 2
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+---
+# Test Profile
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  # Database Settings
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
