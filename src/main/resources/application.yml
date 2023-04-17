@@ -41,8 +41,8 @@ spring:
 
   # Email Settings
   mail:
-    username: something
-    password: something
+    username: ${{ secrets.MAIL_USERNAME }}
+    password: ${{ secrets.MAIL_PASSWORD }}
     host: smtp.gmail.com
     port: 587
     protocol: smtp
@@ -52,6 +52,7 @@ spring:
           auth: true
           starttls:
             enable: true
+
 ---
 # Default Profile
 spring:
