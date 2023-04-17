@@ -1,6 +1,6 @@
 # JWT Configuration
 jwt:
-  secret: ${{ secrets.JWT_SECRET }}
+  secret: ${ JWT_SECRET }
   expiration: 900_000 # 15 minutes
   issuer: "Obsidi Academy"
   audience: feedApp

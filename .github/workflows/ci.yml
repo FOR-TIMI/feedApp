@@ -19,6 +19,9 @@ jobs:
 
       - name: Build and test with Maven
         env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SPRING_PROFILES_ACTIVE: test
         run: mvn -B clean test --file pom.xml
 
