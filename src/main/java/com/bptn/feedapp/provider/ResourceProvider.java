@@ -7,6 +7,7 @@ import com.bptn.feedapp.provider.factory.YamlPropertySourceFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 @Component
+@PropertySource(value = "file:${user.dir}/.env", ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:config.yml", factory = YamlPropertySourceFactory.class)
 public class ResourceProvider {
 
